@@ -5,7 +5,8 @@ import { logoLight } from "../../assets/images";
 import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
+
   // ============= Initial State Start here =============
   const [clientName, setClientName] = useState("");
   const [email, setEmail] = useState("");
@@ -15,8 +16,11 @@ const SignUp = () => {
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("");
   const [zip, setZip] = useState("");
+  const [age, setAge] = useState("");  // added state for age
+  const [gender, setGender] = useState("");  // added state for gender
   const [checked, setChecked] = useState(false);
   // ============= Initial State End here ===============
+
   // ============= Error Msg Start here =================
   const [errClientName, setErrClientName] = useState("");
   const [errEmail, setErrEmail] = useState("");
@@ -26,8 +30,12 @@ const SignUp = () => {
   const [errCity, setErrCity] = useState("");
   const [errCountry, setErrCountry] = useState("");
   const [errZip, setErrZip] = useState("");
+  const [errAge, setErrAge] = useState("");  // error state for age
+  const [errGender, setErrGender] = useState("");  // error state for gender
   // ============= Error Msg End here ===================
+
   const [successMsg, setSuccessMsg] = useState("");
+
   // ============= Event Handler Start here =============
   const handleName = (e) => {
     setClientName(e.target.value);
@@ -61,7 +69,16 @@ const SignUp = () => {
     setZip(e.target.value);
     setErrZip("");
   };
+  const handleAge = (e) => {
+    setAge(e.target.value);
+    setErrAge("");
+  };
+  const handleGender = (e) => {
+    setGender(e.target.value);
+    setErrGender("");
+  };
   // ============= Event Handler End here ===============
+
   // ================= Email Validation start here =============
   const EmailValidation = (email) => {
     return String(email)
@@ -72,9 +89,9 @@ const SignUp = () => {
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-    
+
     if (!checked) return; // Nếu chưa check điều khoản thì không làm gì
-  
+
     // Validate các trường như cũ
     if (!clientName) {
       setErrClientName("Enter your name");
@@ -114,16 +131,26 @@ const SignUp = () => {
       setErrZip("Enter the zip code of your area");
       return;
     }
-  
+    if (!age) {
+      setErrAge("Enter your age");
+      return;
+    }
+    if (!gender) {
+      setErrGender("Select your gender");
+      return;
+    }
+
     // Chuẩn bị dữ liệu để gửi API
     const userData = {
       userName: clientName,
       email: email,
       password: password,
       phoneNumber: phone,
-      address: `${address}, ${city}, ${country}, ${zip}`
+      address: `${address}, ${city}, ${country}, ${zip}`,
+      age: age,
+      gender: gender
     };
-  
+
     try {
       // Gọi API đăng ký
       const response = await fetch('http://localhost:8000/api/auth/register', {
@@ -133,19 +160,19 @@ const SignUp = () => {
         },
         body: JSON.stringify(userData)
       });
-  
+
       const data = await response.json();
-  
+
       if (!response.ok) {
         // Xử lý lỗi từ server
         throw new Error(data.message || 'Đăng ký thất bại');
       }
-  
+
       // Xử lý thành công
       setSuccessMsg(
         `Hello dear ${clientName}, Welcome you to OREBI Admin panel. We received your Sign up request. We are processing to validate your access. Till then stay connected and additional assistance will be sent to you by your mail at ${email}`
       );
-      
+
       // Reset form như cũ
       setClientName("");
       setEmail("");
@@ -155,6 +182,9 @@ const SignUp = () => {
       setCity("");
       setCountry("");
       setZip("");
+      setAge("");
+      setGender("");
+
       // Tự động chuyển hướng sang trang login sau 3 giây
       setTimeout(() => {
         navigate('/signin');
@@ -162,10 +192,10 @@ const SignUp = () => {
 
     } catch (error) {
       console.error('Error:', error);
-      // Có thể thêm hiển thị thông báo lỗi cho người dùng ở đây
       alert(error.message || 'Có lỗi xảy ra khi đăng ký');
     }
   };
+
   return (
     <div className="w-full h-screen flex items-center justify-start">
       <div className="w-1/2 hidden lgl:inline-flex h-full text-white">
@@ -179,59 +209,6 @@ const SignUp = () => {
             </h1>
             <p className="text-base">Create your account to access more</p>
           </div>
-          <div className="w-[300px] flex items-start gap-3">
-            <span className="text-green-500 mt-1">
-              <BsCheckCircleFill />
-            </span>
-            <p className="text-base text-gray-300">
-              <span className="text-white font-semibold font-titleFont">
-                Get started fast with OREBI
-              </span>
-              <br />
-              Lorem ipsum, dolor sit amet consectetur adipisicing elit. Ab omnis
-              nisi dolor recusandae consectetur!
-            </p>
-          </div>
-          <div className="w-[300px] flex items-start gap-3">
-            <span className="text-green-500 mt-1">
-              <BsCheckCircleFill />
-            </span>
-            <p className="text-base text-gray-300">
-              <span className="text-white font-semibold font-titleFont">
-                Access all OREBI services
-              </span>
-              <br />
-              Lorem ipsum, dolor sit amet consectetur adipisicing elit. Ab omnis
-              nisi dolor recusandae consectetur!
-            </p>
-          </div>
-          <div className="w-[300px] flex items-start gap-3">
-            <span className="text-green-500 mt-1">
-              <BsCheckCircleFill />
-            </span>
-            <p className="text-base text-gray-300">
-              <span className="text-white font-semibold font-titleFont">
-                Trusted by online Shoppers
-              </span>
-              <br />
-              Lorem ipsum, dolor sit amet consectetur adipisicing elit. Ab omnis
-              nisi dolor recusandae consectetur!
-            </p>
-          </div>
-          <div className="flex items-center justify-between mt-10">
-            <p className="text-sm font-titleFont font-semibold text-gray-300 hover:text-white cursor-pointer duration-300">
-              © OREBI
-            </p>
-            <p className="text-sm font-titleFont font-semibold text-gray-300 hover:text-white cursor-pointer duration-300">
-              Terms
-            </p>
-            <p className="text-sm font-titleFont font-semibold text-gray-300 hover:text-white cursor-pointer duration-300">
-              Privacy
-            </p>
-            <p className="text-sm font-titleFont font-semibold text-gray-300 hover:text-white cursor-pointer duration-300">
-              Security
-            </p>
-          </div>
         </div>
       </div>
       <div className="w-full lgl:w-[500px] h-full flex flex-col justify-center">
@@ -243,7 +220,7 @@ const SignUp = () => {
             <Link to="/signin">
               <button
                 className="w-full h-10 bg-primeColor rounded-md text-gray-200 text-base font-titleFont font-semibold 
-            tracking-wide hover:bg-black hover:text-white duration-300"
+                tracking-wide hover:bg-black hover:text-white duration-300"
               >
                 Sign in
               </button>
@@ -332,6 +309,46 @@ const SignUp = () => {
                     </p>
                   )}
                 </div>
+                {/* Age */}
+                <div className="flex flex-col gap-.5">
+                  <p className="font-titleFont text-base font-semibold text-gray-600">
+                    Age
+                  </p>
+                  <input
+                    onChange={handleAge}
+                    value={age}
+                    className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-base font-medium placeholder:font-normal rounded-md border-[1px] border-gray-400 outline-none"
+                    type="number"
+                    placeholder="Enter your age"
+                  />
+                  {errAge && (
+                    <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
+                      <span className="font-bold italic mr-1">!</span>
+                      {errAge}
+                    </p>
+                  )}
+                </div>
+                {/* Gender */}
+                <div className="flex flex-col gap-.5">
+                  <p className="font-titleFont text-base font-semibold text-gray-600">
+                    Gender
+                  </p>
+                  <select
+                    onChange={handleGender}
+                    value={gender}
+                    className="w-full h-8 px-4 text-base font-medium rounded-md border-[1px] border-gray-400 outline-none"
+                  >
+                    <option value="">Select Gender</option>
+                    <option value="nam">Nam</option>
+                    <option value="nữ">Nữ</option>
+                  </select>
+                  {errGender && (
+                    <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
+                      <span className="font-bold italic mr-1">!</span>
+                      {errGender}
+                    </p>
+                  )}
+                </div>
                 {/* Address */}
                 <div className="flex flex-col gap-.5">
                   <p className="font-titleFont text-base font-semibold text-gray-600">
@@ -408,6 +425,7 @@ const SignUp = () => {
                     </p>
                   )}
                 </div>
+
                 {/* Checkbox */}
                 <div className="flex items-start mdl:items-center gap-2">
                   <input
@@ -423,11 +441,10 @@ const SignUp = () => {
                 </div>
                 <button
                   onClick={handleSignUp}
-                  className={`${
-                    checked
+                  className={`${checked
                       ? "bg-primeColor hover:bg-black hover:text-white cursor-pointer"
                       : "bg-gray-500 hover:bg-gray-500 hover:text-gray-200 cursor-none"
-                  } w-full text-gray-200 text-base font-medium h-10 rounded-md hover:text-white duration-300`}
+                    } w-full text-gray-200 text-base font-medium h-10 rounded-md hover:text-white duration-300`}
                 >
                   Create Account
                 </button>
